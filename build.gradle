@@ -1,0 +1,94 @@
+buildscript {
+    repositories {
+        mavenCentral()
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
+    }
+
+    dependencies {
+        classpath 'io.ratpack:ratpack-gradle:1.5.0'
+        classpath "com.moowork.gradle:gradle-node-plugin:1.2.0"
+    }
+}
+
+allprojects {
+    repositories {
+        mavenCentral()
+    }
+}
+
+project(':server') {
+    group 'com.bd'
+    version '1.0-SNAPSHOT'
+
+    apply plugin: 'java'
+    apply plugin: 'idea'
+    apply plugin: 'io.ratpack.ratpack-java'
+
+    sourceCompatibility = 1.8
+    targetCompatibility = 1.8
+    compileJava.options.encoding = 'UTF-8'
+
+    mainClassName = 'com.bd.cabs.Server'
+
+    dependencies {
+        runtime group: 'ch.qos.logback', name: 'logback-classic', version: '1.2.3'
+
+        compile ratpack.dependency('spring-boot')
+        compile group: 'mysql', name: 'mysql-connector-java', version: '6.0.6'
+        compile(group: 'org.springframework.boot', name: 'spring-boot-starter-jdbc', version: '1.5.8.RELEASE') {
+            exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging'
+        }
+        compile(group: 'org.springframework.boot', name: 'spring-boot-starter-cache', version: '1.5.8.RELEASE') {
+            exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging'
+        }
+
+        testCompile ratpack.dependency("test")
+        testCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: '1.5.8.RELEASE'
+        testCompile group: 'com.h2database', name: 'h2', version: '1.4.196'
+        testCompile group: 'org.hamcrest', name: 'hamcrest-all', version: '1.3'
+        testCompile group: 'junit', name: 'junit', version: '4.12'
+    }
+}
+
+project(':client') {
+    apply plugin: 'com.moowork.node'
+
+    node {
+        nodeModulesDir = file("${project.projectDir}/src/cabui")
+    }
+
+    task npm_build(type: NpmTask) {
+        args = ['run-script', 'build']
+    }
+
+    task run(type: NpmTask, dependsOn: 'npm_build') {
+        args = ['run-script', 'run']
+    }
+}
+
+task prompt {
+    doFirst {
+        println("\n\n\n\n")
+        println(new File('./README.md').text)
+        println("Press 'y' to continue, anything else to exit...\n")
+        BufferedReader bufferRead = new BufferedReader(new InputStreamReader(System.in))
+        String input = bufferRead.readLine()
+        if (!input.equalsIgnoreCase("y")) {
+            throw new InvalidUserDataException("\n\n   You chose to not continue    \n\n")
+        }
+    }
+}
+task run(dependsOn: ['prompt', ':client:run', ':server:run']) {
+    doFirst {
+        println("\n\n\n\n")
+        println(new File('./README.md').text)
+        println("Press 'y' to continue, anything else to exit...\n")
+        BufferedReader bufferRead = new BufferedReader(new InputStreamReader(System.in))
+        String input = bufferRead.readLine()
+        if (!input.equalsIgnoreCase("y")) {
+            throw new InvalidUserDataException("\n\n   You chose to not continue    \n\n")
+        }
+    }
+}

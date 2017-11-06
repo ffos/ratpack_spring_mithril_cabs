@@ -1,0 +1,21 @@
+{
+  "name": "cabui",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "webpack src/index.js bin/app.js -d --watch",
+    "build": "webpack src/index.js bin/app.js -p",
+    "run": "opn ./index.html"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "mithril": "^1.1.5"
+  },
+  "devDependencies": {
+    "opn-cli": "^3.1.0",
+    "webpack": "^3.8.1"
+  }
+}
