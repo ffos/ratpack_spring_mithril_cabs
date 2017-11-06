@@ -81,14 +81,4 @@ task prompt {
     }
 }
 task run(dependsOn: ['prompt', ':client:run', ':server:run']) {
-    doFirst {
-        println("\n\n\n\n")
-        println(new File('./README.md').text)
-        println("Press 'y' to continue, anything else to exit...\n")
-        BufferedReader bufferRead = new BufferedReader(new InputStreamReader(System.in))
-        String input = bufferRead.readLine()
-        if (!input.equalsIgnoreCase("y")) {
-            throw new InvalidUserDataException("\n\n   You chose to not continue    \n\n")
-        }
-    }
 }
